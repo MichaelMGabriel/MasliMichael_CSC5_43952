@@ -2,7 +2,7 @@
  * File:   main.cpp
  * Author: Michael Masli
  *
- * Created on May 4, 2015, 10:32 AM
+ * Created on May 25, 2015, 14:32 AM
  * Purpose: Hangman Game
  */
 //User Libraries
@@ -17,16 +17,16 @@
 using namespace std;
 
 //Global Constants
-const int ROW=26; //size of 2d array
+const int COL=26; //size of 2d array (alphabet characters = 26 letters)
 //Function Prototypes
-bool letFill (char, string, string&, int, char[][ROW]); //Letter Fill function
+bool letFill (char, string, string&, int, char[][COL]); //Letter Fill function
 void getWord (string [], string &, string &); //'&' call by referrence
 float percent (int, int); // guessing accuracy percentage in decimal
 void display(int); //display hangman
 bool valid(char, string);   //input validation
-//display input array and 2d record array
-void showArray(int [], char [], char[][ROW], int total_try, int unknown_length);
-void sortArray(int [], char [], char[][ROW], int, int);
+//Display input array and 2d record array
+void showAry(int [], char [], char[][COL], int total_try, int unknown_length);
+void sortAry(int [], char [], char[][COL], int, int);
 //Execution Begins Here
 int main (int argc, char** argv){
     //Declare Variables
@@ -35,55 +35,56 @@ int main (int argc, char** argv){
     int nWrng=0; //num. of wrong guesses
     string word;
     const int SIZE=10; //size of array
-    char inputArr[ROW];
-    char record[ROW][ROW]; //record of unknown and try
-    int tryArr[ROW];
-    int ttlTry=1;
+    char inputAr[COL]; //1D array (new))
+    char record[COL][COL]; //record of unknown and try 2D (new)
+    int tryArr[COL]; //new
+    int ttlTry=1; //initialize number of try (new)
     cout<<setprecision(2)<<fixed<<showpoint; //decimal format
-    for(int i=0;i<ROW;i++){
+    //New Loop (for the "unknown" unrevealed word)
+    for(int i=0;i<COL;i++){
         for(int j=0;j<26;j++){
-            record[i][j]='_';
+            record[i][j]='_'; //2D array print out unrevealed unknown word
         }
     }
     //set the random time seed
     srand(time(0));
     string words[SIZE] = {
         "china",
-	"germany", //7
-	"england", //
-	"netherlands", //9
-	"philippines",
-	"australia",
-	"turkey",
-	"greece",
-	"uganda",
-	"indonesia"
+        "germany", //7
+        "england", //
+        "netherlands", //9
+        "philippines",
+        "australia",
+        "turkey",
+        "greece",
+        "uganda",
+        "indonesia"
     }; 
     
     string sports[SIZE] = {
         "football",
-	"swimming",
-	"soccer",
-	"basketball",
-	"cricket",
-	"baseball",
-	"running",
-	"tennis",
-	"badminton",
-	"racing"
+        "swimming",
+        "soccer",
+        "basketball",
+        "cricket",
+        "baseball",
+        "running",
+        "tennis",
+        "badminton",
+        "racing"
     };
     
     string music[SIZE] = {
         "rock",
-	"hiphop",
-	"pop",
-	"folk",
-	"classical",
-	"jazz",
-	"alternative",
-	"blues",
-	"punk",
-	"country"
+        "hiphop",
+        "pop",
+        "folk",
+        "classical",
+        "jazz",
+        "alternative",
+        "blues",
+        "punk",
+        "country"
     };
 
 	string unknown; //for the unknown word
@@ -103,6 +104,7 @@ int main (int argc, char** argv){
     int choice;
         //Repeat the menu
     do{    
+        nWrng=0;
         //General Menu Format
         //Display the selection
         cout<<"\nType 1 to guess a country name."<<endl;
@@ -118,7 +120,7 @@ int main (int argc, char** argv){
                     getWord(words, word, unknown);
                     //Loop until the guesses are used up
                     do{
-                        cout<<"\ntotal try = "<<ttlTry<<endl;
+                        //cout<<"\ntotal try = "<<ttlTry<<endl;
                         //Input Validation
                         do{
                             cout<<"\n"<< unknown;
@@ -127,9 +129,9 @@ int main (int argc, char** argv){
                             cin.ignore();
                             if(valid(letter, unknown)==false)cout<<"Letter '"<<letter<<"' was input before, try again!\n";
                         }while(valid(letter, unknown)==false);
-                        inputArr[ttlTry-1]=letter;
+                        inputAr[ttlTry-1]=letter;
                         //Conditions
-                        if (letFill(inputArr[ttlTry-1], word, unknown, ttlTry, record)==false){
+                        if (letFill(inputAr[ttlTry-1], word, unknown, ttlTry, record)==false){
                                 cout<<endl<< "Whoops! The letter is not in the word!"<<endl;
                                 nWrng++;
                                 display(nWrng);
@@ -137,9 +139,8 @@ int main (int argc, char** argv){
                         else{
                                 cout<<endl<< "Yes! You found a letter, keep going!" <<endl;
                         }
-                        
-                        ttlTry++;
-                        
+                        ttlTry++; //increment ttl try (new)
+                        //cout<<unknown<<endl;
                         //Inform the user for how many guess the user has
                         cout<<"Number of guess(s) left = "<< MaxTRY - nWrng;
 
@@ -147,7 +148,119 @@ int main (int argc, char** argv){
 
                     }while(nWrng<MaxTRY && word!=unknown);
                     if (word==unknown){
-                            cout <<"The word is "<<word<<endl;
+                            cout <<"\nThe word is "<<word<<endl;
+                            cout << "Congratulations! You got it!"<<endl;
+                        }
+                    else{
+                            cout << "\nSorry, you lose...you've been hanged :(" << endl;
+                            cout << "The correct word was : " << word << endl;
+                    }
+                    //cout<<nWrng<<" "<<MaxTRY<<endl;
+                    cout<<"Your guessing accuracy in decimal point is "<<percent(nWrng, MaxTRY)<<endl;
+                    
+                    for(int i=0;i<ttlTry-1;i++){ //new loop
+                        tryArr[i]=i+1;
+                    }
+                    //Show the Array (new)
+                    cout<<"Table of input: "<<endl;
+                    showAry(tryArr, inputAr, record, ttlTry, unknown.length());
+                    //Sort the Array
+                    sortAry(tryArr, inputAr, record, ttlTry, unknown.length());
+                    cout<<"After Sorting:\n";
+                    showAry(tryArr, inputAr, record, ttlTry, unknown.length()); //Show the array after sorting
+                    
+                    break;
+                }       
+               
+                case 2:{
+                    getWord(sports, word, unknown);
+                   
+                     //Loop until the guesses are used up
+                    do{
+                        //Input Validation
+                        do{
+                            cout<<"\n"<< unknown;
+                            cout<<"\nGuess a Name of Sport\nTry typing a letter EACH TIME to guess the word (all LOWERCASE): ";
+                            cin>>letter;
+                            cin.ignore();
+                            if(valid(letter, unknown)==false)cout<<"Letter '"<<letter<<"' was input before, try again!\n";
+                        }while(valid(letter, unknown)==false);
+                        inputAr[ttlTry-1]=letter;
+                        //Conditions
+                    if (letFill(inputAr[ttlTry-1], word, unknown, ttlTry, record)==false){
+                            cout<<endl<< "Whoops! The letter is not in the word!"<<endl;
+                            nWrng++;
+                            display(nWrng);
+                    }
+                    else{
+                            cout<<endl<< "Yes! You found a letter, keep going!" <<endl;
+                    }
+                    ttlTry++;    
+                    //cout<<unknown<<endl;
+                    //Inform the user for how many guess the user has
+                    cout<<"Number of guess(s) left = "<< MaxTRY - nWrng;
+
+                    // Check if user guessed the word.
+                    
+                    }while(nWrng<MaxTRY && word!=unknown);
+                    if (word==unknown){
+                            cout <<"\nThe word is "<<word<<endl;
+                            cout << "Congratulations! You got it!"<<endl;
+                        }
+                    else{
+                            cout << "\nSorry, you lose...you've been hanged :(" << endl;
+                            cout << "The correct word was : " << word << endl;
+                    }
+                    
+                    //cout<<nWrng<<" "<<MaxTRY<<endl;
+                    cout<<"Your guessing accuracy in decimal point is "<<percent(nWrng, MaxTRY)<<endl;
+                    
+                    for(int i=0;i<ttlTry-1;i++){
+                        tryArr[i]=i+1;
+                    }
+                    //Show the Array
+                    cout<<"Table of input: "<<endl;
+                    showAry(tryArr, inputAr, record, ttlTry, unknown.length());
+                    //Sort the Array
+                    sortAry(tryArr, inputAr, record, ttlTry, unknown.length());
+                    cout<<"After Sorting:\n";
+                    showAry(tryArr, inputAr, record, ttlTry, unknown.length()); //Show the array after sorting
+                    break;
+                }
+                case 3:{
+                    
+                    getWord(music, word, unknown); //getWord--> randomly pick word from music array
+                   
+                    //Loop until the guesses are used up
+                    do{
+                        //Input Validation
+                        do{
+                            cout<<"\n"<< unknown;
+                            cout<<"\nGuess a name of Music Genre!\nTry typing a letter EACH TIME to guess the word (all LOWERCASE): ";
+                            cin>>letter;
+                            cin.ignore();
+                            if(valid(letter, unknown)==false)cout<<"Letter '"<<letter<<"' was input before, try again!\n";
+                        }while(valid(letter, unknown)==false);
+                    //Conditions
+                        inputAr[ttlTry-1]=letter;
+                    if (letFill(inputAr[ttlTry-1], word, unknown, ttlTry, record)==false){
+                            cout<<endl<< "Whoops! The letter is not in the word!"<<endl;
+                            nWrng++;
+                            display(nWrng);
+                    }
+                    else{
+                            cout<<endl<< "Yes! You found a letter, keep going!" <<endl;
+                    }
+                    ttlTry++; //increment ttl try
+                    //cout<<unknown<<endl;
+                    //Inform the user for how many guess the user has
+                    cout<<"Number of guess(s) left = "<< MaxTRY - nWrng;
+
+                    // Check if user guessed the word.
+                    
+                    }while(nWrng<MaxTRY && word!=unknown);
+                    if (word==unknown){
+                            cout <<"\nThe word is "<<word<<endl;
                             cout << "Congratulations! You got it!"<<endl;
                         }
                     else{
@@ -159,102 +272,13 @@ int main (int argc, char** argv){
                     for(int i=0;i<ttlTry-1;i++){
                         tryArr[i]=i+1;
                     }
-                    showArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    sortArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    cout<<"After Sorting\n";
-                    showArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    
-                    break;
-                }       
-               
-                case 2:{
-                    getWord(sports, word, unknown);
-//                   
-                     //Loop until the guesses are used up
-                    do{
-                        //Input Validation
-                        do{
-                            cout<<"\n"<< unknown;
-                            cout<<"\nGuess a Name of Sport\nTry typing a letter EACH TIME to guess the word (all LOWERCASE): ";
-                            cin>>letter;
-                            cin.ignore();
-                            if(valid(letter, unknown)==false)cout<<"Letter '"<<letter<<"' was input before, try again!\n";
-                        }while(valid(letter, unknown)==false);
-                    //Conditions
-                    if (letFill(inputArr[ttlTry-1], word, unknown, ttlTry, record)==false){
-                            cout<<endl<< "Whoops! The letter is not in the word!"<<endl;
-                            nWrng++;
-                            display(nWrng);
-                    }
-                    else{
-                            cout<<endl<< "Yes! You found a letter, keep going!" <<endl;
-                    }
-                    cout<<unknown<<endl;
-                    //Inform the user for how many guess the user has
-                    cout<<"Number of guess(s) left = "<< MaxTRY - nWrng;
-
-                    // Check if user guessed the word.
-                    
-                    }while(nWrng<MaxTRY && word!=unknown);
-                    if (word==unknown){
-                            cout <<"The word is "<<word<<endl;
-                            cout << "Congratulations! You got it!"<<endl;
-                        }
-                    else{
-                            cout << "\nSorry, you lose...you've been hanged :(" << endl;
-                            cout << "The correct word was : " << word << endl;
-                    }
-                    //cout<<nWrng<<" "<<MaxTRY<<endl;
-                    cout<<"Your guessing accuracy in decimal point is "<<percent(nWrng, MaxTRY)<<endl;
-                    cout<<"The input record\n";
-                    showArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    sortArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    showArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    break;
-                }
-                case 3:{
-                    
-                    getWord(music, word, unknown); //getWord--> randomly pick word from music array
-//                    
-                     //Loop until the guesses are used up
-                    do{
-                        //Input Validation
-                        do{
-                            cout<<"\n"<< unknown;
-                            cout<<"\nGuess a name of Music Genre!\nTry typing a letter EACH TIME to guess the word (all LOWERCASE): ";
-                            cin>>letter;
-                            cin.ignore();
-                            if(valid(letter, unknown)==false)cout<<"Letter '"<<letter<<"' was input before, try again!\n";
-                        }while(valid(letter, unknown)==false);
-                    //Conditions
-                    if (letFill(inputArr[ttlTry-1], word, unknown, ttlTry, record)==false){
-                            cout<<endl<< "Whoops! The letter is not in the word!"<<endl;
-                            nWrng++;
-                            display(nWrng);
-                    }
-                    else{
-                            cout<<endl<< "Yes! You found a letter, keep going!" <<endl;
-                    }
-                    cout<<unknown<<endl;
-                    //Inform the user for how many guess the user has
-                    cout<<"Number of guess(s) left = "<< MaxTRY - nWrng;
-
-                    // Check if user guessed the word.
-                    
-                    }while(nWrng<MaxTRY && word!=unknown);
-                    if (word==unknown){
-                            cout <<"The word is "<<word<<endl;
-                            cout << "Congratulations! You got it!"<<endl;
-                        }
-                    else{
-                            cout << "\nSorry, you lose...you've been hanged :(" << endl;
-                            cout << "The correct word was : " << word << endl;
-                    }
-                    //cout<<nWrng<<" "<<MaxTRY<<endl;
-                    cout<<"Your guessing accuracy in decimal point is "<<percent(nWrng, MaxTRY)<<endl;
-                    showArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    sortArray(tryArr, inputArr, record, ttlTry, unknown.length());
-                    showArray(tryArr, inputArr, record, ttlTry, unknown.length());
+                    //Show the Array
+                    cout<<"Table of input: "<<endl;
+                    showAry(tryArr, inputAr, record, ttlTry, unknown.length());
+                    //Sort the Array
+                    sortAry(tryArr, inputAr, record, ttlTry, unknown.length());
+                    cout<<"After Sorting:\n";
+                    showAry(tryArr, inputAr, record, ttlTry, unknown.length()); //Show the array after sorting
                     break;
                 }
                 default:{
@@ -266,7 +290,8 @@ int main (int argc, char** argv){
     return 0;
 }
 //The function of changing unknown
-bool letFill (char guess, string word, string &unknown, int ttlTry, char record[][ROW]){
+bool letFill (char guess, string word, string &unknown, int ttlTry, char record[][COL]){
+  cout<<"guess = "<<guess<<endl;
     bool match=false;
     for (int i = 0; i< word.length(); i++){ //word.length = how many characters are in side
             if (guess == word[i]){      //parallel array same index for word and unknown
@@ -373,30 +398,34 @@ bool valid(char input, string unknown){
     }
     return true;
 }
-void showArray(int tryArr[], char inputArr[], char record[][ROW], int ttl_try, int length){
+void showAry(int tryArr[], char inputAr[], char record[][COL], int ttl_try, int length){
+    cout<<"| Attempt |    Phrase   | Input|\n";
     for(int i=0;i<ttl_try-1;i++){
-        cout<<tryArr[i]<<" try: ";
+        cout<<"|   "<<setw(2)<<tryArr[i]<<"    |";
+        string output=""; //starts as a blank string
         for(int j=0;j<length;j++){
-            cout<<record[i][j];
+            output+=record[i][j];   
         }
-        cout<<" "<<inputArr[i]<<"\n";
+        cout<<setw(13)<<output;
+        cout<<"|  "<<inputAr[i]<<"   |\n";
+        cout<<"|_________|_____________|______|\n";
     }
 }
-void sortArray(int tryArr[], char inputArr[], char record[][ROW], int ttlTry, int length){
+void sortAry(int tryArr[], char inputAr[], char record[][COL], int ttlTry, int length){
     bool swap;
     char temp;
     int itemp;
     do{
         swap=false;
         for(int i=0;i<ttlTry-2;i++){
-            if(inputArr[i]>inputArr[i+1]){
+            if(inputAr[i]>inputAr[i+1]){
                 swap=true;
                 itemp=tryArr[i];
                 tryArr[i]=tryArr[i+1];
                 tryArr[i+1]=itemp;
-                temp=inputArr[i];
-                inputArr[i]=inputArr[i+1];
-                inputArr[i+1]=temp;
+                temp=inputAr[i];
+                inputAr[i]=inputAr[i+1];
+                inputAr[i+1]=temp;
                 
                 for(int j=0;j<length;j++){
                     temp = record[i][j];
