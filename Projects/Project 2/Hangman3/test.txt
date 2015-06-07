@@ -1,4 +1,0 @@
-Hello there! Welcome to HANGMAN...Guess the correct word.
-Each letter is represented by the character '-' 
-You get to type a letter in each try.
-You have 8 tries to guess the correct word in the selected category.
